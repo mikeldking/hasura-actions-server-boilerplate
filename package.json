@@ -1,0 +1,80 @@
+{
+  "name": "@engineml/actions",
+  "version": "0.0.0",
+  "description": "Hasura action server builerplate",
+  "main": "src/server.ts",
+  "repository": "git@github.com:mikeldking/hasura-actions-server-boilerplate.git",
+  "author": "mikeldking@gmail.com",
+  "license": "MIT",
+  "directories": {
+    "lib": "lib",
+    "test": "__tests__"
+  },
+  "scripts": {
+    "start": "npm run build && concurrently -k -p '[{name}]' --n='ts,node' -c 'blue.bold,green.bold'  'npm run watch:ts' 'npm run watch'",
+    "test": "NODE_ENV=test jest",
+    "test:watch": "jest --watch",
+    "build": "NODE_ENV=production BABEL_ENV=production babel src --out-dir dist --extensions '.ts' --source-maps inline",
+    "watch": "APP_NAME=actions DEBUG=* nodemon -r dotenv/config --delay 3 --inspect --watch ./dist dist/server.js | bunyan -o short -c \"this.widget_type !=='access'\"",
+    "watch:ts": "babel src --out-dir dist --extensions '.ts' --source-maps inline --watch",
+    "typecheck": "tsc --noEmit",
+    "tslint": "tslint -c tslint.json -p tsconfig.json",
+    "lint": "npm run typecheck && npm run tslint",
+    "gql:download-schema": "apollo schema:download graphql-schema.json",
+    "gql:codegen": "apollo codegen:generate --localSchemaFile=./graphql-schema.json --target=typescript --includes=src/**/*.ts --tagName=gql --addTypename --globalTypesFile=src/types/gqlTypes.ts types",
+    "gql:codegen:watch": "apollo codegen:generate --localSchemaFile=./graphql-schema.json --target=typescript --includes=src/**/*.ts --tagName=gql --addTypename --globalTypesFile=src/types/gqlTypes.ts --watch types"
+  },
+  "dependencies": {
+    "graphql": "^15.0.0",
+    "graphql-request": "^1.8.2",
+    "graphql-tag": "^2.10.3",
+    "koa": "^2.11.0",
+    "koa-bodyparser": "^4.2.1",
+    "koa-helmet": "^5.2.0",
+    "koa-router": "^8.0.8"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.7.0",
+    "@babel/core": "^7.7.2",
+    "@babel/node": "^7.6.2",
+    "@babel/plugin-proposal-object-rest-spread": "^7.6.2",
+    "@babel/preset-env": "^7.7.1",
+    "@babel/preset-typescript": "^7.8.3",
+    "@types/bunyan": "^1.8.6",
+    "@types/dotenv": "^6.1.1",
+    "@types/jest": "^24.0.23",
+    "@types/koa": "^2.11.2",
+    "@types/koa-bodyparser": "^4.3.0",
+    "@types/koa-helmet": "^3.1.2",
+    "@types/koa-router": "^7.4.0",
+    "@types/node": "^12.12.7",
+    "apollo": "^2.25.0",
+    "babel-plugin-module-resolver": "^4.0.0",
+    "bunyan": "^1.8.12",
+    "concurrently": "^5.0.0",
+    "dotenv": "^8.1.0",
+    "jest": "^25.2.7",
+    "nodemon": "^1.19.3",
+    "tslint": "^5.20.1",
+    "tslint-config-prettier": "^1.18.0",
+    "typescript": "^3.8.3"
+  },
+  "jest": {
+    "collectCoverageFrom": [
+      "src/**/*.{js,jsx,ts,tsx}",
+      "!src/**/*.d.ts"
+    ],
+    "testMatch": [
+      "<rootDir>/src/**/__tests__/**/*.{js,jsx,ts,tsx}",
+      "<rootDir>/src/**/?(*.)(spec|test).{js,jsx,ts,tsx}"
+    ],
+    "testEnvironment": "node",
+    "testURL": "http://localhost",
+    "transform": {
+      "^.+\\.(js|jsx|ts|tsx)$": "<rootDir>/node_modules/babel-jest"
+    },
+    "transformIgnorePatterns": [
+      "[/\\\\]node_modules[/\\\\].+\\.(js|jsx|ts|tsx)$"
+    ]
+  }
+}
